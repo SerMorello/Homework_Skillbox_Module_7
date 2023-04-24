@@ -11,8 +11,7 @@ namespace Homework_Skillbox_Module_7
     public struct Repository
     {
 
-        public static string Path { get; set; }
-        //Worker worker;
+        public static string Path { get; private set; }
         public Repository()
         {
             Path = @"staff.json";
@@ -21,7 +20,7 @@ namespace Homework_Skillbox_Module_7
         /// Получение Полного списка сотрулников
         /// </summary>
         /// <returns>Список сотрудников</returns>
-        private List<Worker> GetAllWorkers()
+        public List<Worker> GetAllWorkers()
         {
             if (!File.Exists(Path))
             {
@@ -42,15 +41,10 @@ namespace Homework_Skillbox_Module_7
         /// <summary>
         /// Вывод на экран списка сотрудников
         /// </summary>
-        public void PrintInfo()
+        public void PrintInfo(List<Worker> workers)
         {
-
-            if (File.Exists(Repository.Path))
-            {
-                PrintHead();
-                PrintInfoWorkers(GetAllWorkers());
-            }
-            else Console.WriteLine("Выводить нечего, сначала внесите данные");
+            PrintHead();
+            PrintInfoWorkers(workers);
         }
         /// <summary>
         /// Получение сотрудника по его номеру
@@ -87,29 +81,21 @@ namespace Homework_Skillbox_Module_7
             int age;
             DateTime dateBirth;
 
-            for (int num = 1; num < 6; num++)
+            for (int num = 2; num < 6; num++)
             {
                 switch (num)
                 {
-                    case 1:
-                        worker.DateAdded = DateTime.Now;
-
-                        break;
-
+                    //case 1:
+                    //    worker.DateAdded = DateTime.Now;
+                    //    break;
                     case 2:
                         Console.WriteLine("Введите Фамилию Имя Отчество");
-
                         worker.FIO = Console.ReadLine();
-
                         break;
-
                     case 3:
                         Console.WriteLine("Введите рост");
-
                         worker.Height = int.Parse(Console.ReadLine());
-
                         break;
-
                     case 4:
                         Console.WriteLine("Введите дату рождения");
 
@@ -117,8 +103,8 @@ namespace Homework_Skillbox_Module_7
                         {
                             Console.WriteLine("Некорректно введенны данные, попробуйте еще раз");
                         }
-                        worker.DateBirthday = dateBirth;
 
+                        worker.DateBirthday = dateBirth;
                         age = DateTime.Now.Year - dateBirth.Year;
 
                         if (DateTime.Now.DayOfYear < dateBirth.DayOfYear)
@@ -127,14 +113,10 @@ namespace Homework_Skillbox_Module_7
                         }
 
                         worker.Age = age;
-
                         break;
-
                     case 5:
                         Console.WriteLine("Введите место рождения");
-
                         worker.PlaceBirth = Console.ReadLine();
-
                         break;
                 }
             }
@@ -152,9 +134,7 @@ namespace Homework_Skillbox_Module_7
             var jsonText = JsonConvert.SerializeObject(workers, Newtonsoft.Json.Formatting.Indented);
             using (StreamWriter sw = new StreamWriter(Path))
             {
-
                 sw.Write(jsonText);
-
             }
         }
         /// <summary>
@@ -179,7 +159,7 @@ namespace Homework_Skillbox_Module_7
         /// <param name="dateFrom">Начальная дата</param>
         /// <param name="dateTo">Конечная дата</param>
         /// <returns></returns>
-        private List<Worker> GetWorkersBetweenTwoDates()
+        public List<Worker> GetWorkersBetweenTwoDates()
         {
             bool flag = false;
             DateTime dateFrom = new DateTime();
@@ -194,6 +174,7 @@ namespace Homework_Skillbox_Module_7
                 if (!flag) Console.WriteLine("Вы ввели некорректные  данные попробуйте еще раз.");
                 else dateFrom = result;
             }
+
             flag = false;
 
             while (!flag)
@@ -207,7 +188,6 @@ namespace Homework_Skillbox_Module_7
             }
 
             List<Worker> workers = GetAllWorkers();
-
             List<Worker> workerBetweenTwoDates = new List<Worker>();
 
             for (int i = 0; i < workers.Count; i++)
@@ -227,26 +207,48 @@ namespace Homework_Skillbox_Module_7
             PrintHead();
             PrintInfoWorkers(GetWorkersBetweenTwoDates());
         }
-        static void BubbleSort(List<Worker> workers)
-        {
-
-        }
-        private static void PrintHead()
+        /// <summary>
+        /// Вывод заголовка таблицы
+        /// </summary>
+        public static void PrintHead()
         {
             Console.WriteLine("|{0, -3}|{1,-15}|{2, -35}|{3,-7}|{4,-4}|{5,-13}|{6,-25}|{7,-36}|" +
             "\n--------------------------------------------------------------------------------------------------------------------------------------------------"
             , "N", "Дата записи", "Ф. И. О.", "Возраст", "Рост", "Дата рождения", "Место рождения", "ID сотрудника");
         }
+        /// <summary>
+        /// Вывод списка сотрудников
+        /// </summary>
+        /// <param name="workers">список сотрудников</param>
         private void PrintInfoWorkers(List<Worker> workers)
         {
             for (int i = 0; i < workers.Count; i++)
             {
-                Console.WriteLine($"|{i + 1,-3}|{workers[i].DateAdded.ToString("g"),-15}|{workers[i].FIO,-35}|{workers[i].Age,-7}|{workers[i].Height,-4}|{workers[i].DateBirthday.ToString("d"),-13}|{workers[i].PlaceBirth,-25}|{workers[i].uniqueId,-36}|");
-
+                Console.WriteLine($"|{i + 1,-3}|{workers[i].DateAdded,-15:g}|{workers[i].FIO,-35}|{workers[i].Age,-7}|{workers[i].Height,-4}|{workers[i].DateBirthday,-13:d}|{workers[i].PlaceBirth,-25}|{workers[i].uniqueId,-36}|");
             }
             Console.WriteLine("--------------------------------------------------------------------------------------------------------------------------------------------------\nКонец файла");
+        }
+        public void CreatingListRandomWorkers(int quantity)
+        {
+            Random random = new Random();
+            List<Worker> creatingList = GetAllWorkers();
+            for (int i = 0; i <= quantity; i++)
+            {
+                Worker newWorker = new Worker();
 
+                newWorker.FIO = $"Имя {random.Next(0,9999)}";
+                newWorker.DateBirthday = DateTime.Now.AddDays(-(random.Next(6574, 23741)));
+                newWorker.Age = DateTime.Now.Year - newWorker.DateBirthday.Year;
+                newWorker.Height = random.Next(145, 235);
+                newWorker.PlaceBirth = $"Город {random.Next(0, 9999)}";
+                creatingList.Add(newWorker);
+            }
+
+            var jsonText = JsonConvert.SerializeObject(creatingList, Newtonsoft.Json.Formatting.Indented);
+            using (StreamWriter sw = new StreamWriter(Path))
+            {
+                sw.Write(jsonText);
+            }
         }
     }
-
 }
