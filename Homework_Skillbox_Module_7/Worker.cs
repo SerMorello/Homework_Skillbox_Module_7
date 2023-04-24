@@ -8,7 +8,8 @@ using System;
     {
         [JsonProperty]
         public Guid uniqueId { get; private set; } // уникальный номер
-        public DateTime DateAdded { get; set; }   //Дата и время добавления записи
+        [JsonProperty]
+        public DateTime DateAdded { get; private set; }   //Дата и время добавления записи
         public string FIO { get; set; } //Ф.И.О.
         public int Age { get; set; } //Возраст
         public int Height { get; set; }//Рост
@@ -18,7 +19,7 @@ using System;
         public Worker() 
         {
             uniqueId = Guid.NewGuid();
-           
+            DateAdded = DateTime.Now;
         }
     }
 }
